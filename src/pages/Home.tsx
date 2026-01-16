@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Trophy, Medal, Award, Star } from "lucide-react";
-import Autoplay from "embla-carousel-autoplay";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
+import { Trophy, Medal, Award } from "lucide-react";
 import heroImage from "@/assets/hero-family.jpg";
 import amaraImg from "@/assets/contestants/amara.jpg";
 import adaezeImg from "@/assets/contestants/adaeze.jpg";
@@ -22,26 +21,69 @@ const contestants = [
   { name: "Tunde", image: tundeImg },
 ];
 
+// Preload all images on mount
+const preloadImages = (images: string[]): Promise<void[]> => {
+  return Promise.all(
+    images.map(
+      (src) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // Resolve even on error to not block
+          img.src = src;
+        })
+    )
+  );
+};
+
 const OptimizedImage = ({ 
   src, 
   alt, 
-  className 
+  className,
+  onLoadComplete
 }: { 
   src: string; 
   alt: string; 
   className?: string;
+  onLoadComplete?: () => void;
 }) => {
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const retryCount = useRef(0);
+  
+  const handleLoad = useCallback(() => {
+    setLoaded(true);
+    setError(false);
+    onLoadComplete?.();
+  }, [onLoadComplete]);
+
+  const handleError = useCallback(() => {
+    if (retryCount.current < 3) {
+      retryCount.current += 1;
+      // Retry loading with cache bust
+      const imgElement = document.querySelector(`img[src="${src}"]`) as HTMLImageElement;
+      if (imgElement) {
+        imgElement.src = `${src}?retry=${retryCount.current}`;
+      }
+    } else {
+      setError(true);
+      onLoadComplete?.(); // Don't block carousel
+    }
+  }, [src, onLoadComplete]);
   
   return (
     <div className="relative w-full h-full">
-      {!loaded && <Skeleton className="absolute inset-0 w-full h-full" />}
+      {!loaded && !error && <Skeleton className="absolute inset-0 w-full h-full" />}
+      {error && (
+        <div className="absolute inset-0 w-full h-full bg-muted flex items-center justify-center">
+          <span className="text-muted-foreground text-sm">Loading...</span>
+        </div>
+      )}
       <img
         src={src}
         alt={alt}
-        loading="lazy"
-        decoding="async"
-        onLoad={() => setLoaded(true)}
+        onLoad={handleLoad}
+        onError={handleError}
         className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
       />
     </div>
@@ -50,18 +92,63 @@ const OptimizedImage = ({
 
 const Home = () => {
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const [heroError, setHeroError] = useState(false);
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const heroRetryCount = useRef(0);
+  const loadedImagesCount = useRef(0);
+
+  // Preload all contestant images
+  useEffect(() => {
+    const allImages = [heroImage, ...contestants.map(c => c.image)];
+    preloadImages(allImages).then(() => {
+      setAllImagesLoaded(true);
+    });
+  }, []);
+
+  // Start autoplay only after all images are loaded
+  useEffect(() => {
+    if (carouselApi && allImagesLoaded) {
+      const autoplayPlugin = (carouselApi as any).plugins()?.autoplay;
+      if (autoplayPlugin) {
+        autoplayPlugin.play();
+      }
+    }
+  }, [carouselApi, allImagesLoaded]);
+
+  const handleHeroLoad = () => {
+    setHeroLoaded(true);
+    setHeroError(false);
+  };
+
+  const handleHeroError = () => {
+    if (heroRetryCount.current < 3) {
+      heroRetryCount.current += 1;
+      setHeroError(false);
+    } else {
+      setHeroError(true);
+    }
+  };
+
+  const handleContestantImageLoad = () => {
+    loadedImagesCount.current += 1;
+  };
   
   return (
     <div className="min-h-screen">
       {/* Hero Banner */}
-      <section className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-black">
-        {!heroLoaded && <div className="absolute inset-0 w-full h-full bg-black" />}
+      <section className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-muted">
+        {!heroLoaded && !heroError && <Skeleton className="absolute inset-0 w-full h-full" />}
+        {heroError && (
+          <div className="absolute inset-0 w-full h-full bg-muted flex items-center justify-center">
+            <span className="text-muted-foreground">Loading image...</span>
+          </div>
+        )}
         <img
-          src={heroImage}
+          src={heroError && heroRetryCount.current < 3 ? `${heroImage}?retry=${heroRetryCount.current}` : heroImage}
           alt="Happy family - Little Stars Contest"
-          loading="eager"
-          decoding="async"
-          onLoad={() => setHeroLoaded(true)}
+          onLoad={handleHeroLoad}
+          onError={handleHeroError}
           className={`w-full h-full object-cover object-center ${heroLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
@@ -108,13 +195,7 @@ const Home = () => {
               align: "start",
               loop: true,
             }}
-            plugins={[
-              Autoplay({
-                delay: 3000,
-                stopOnInteraction: false,
-                stopOnMouseEnter: true,
-              }),
-            ]}
+            setApi={setCarouselApi}
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
@@ -126,6 +207,7 @@ const Home = () => {
                         src={contestant.image}
                         alt={contestant.name}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onLoadComplete={handleContestantImageLoad}
                       />
                     </div>
                     <p className="font-semibold text-foreground">{contestant.name}</p>
@@ -139,8 +221,28 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Fun Section */}
+      <section className="py-16 px-4 bg-background">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Join the Fun!</h2>
+          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
+            <p>
+              Little Stars Contest is more than just a competition—it's a celebration of every child's unique sparkle! 
+              Watch your little one shine as they gather votes from family, friends, and supporters across Nigeria.
+            </p>
+            <p>
+              Every vote is a cheer, every share spreads the joy, and every participant is already a winner in our hearts. 
+              This is your chance to create unforgettable memories and show the world just how special your child is.
+            </p>
+            <p className="font-semibold text-foreground">
+              Ready to let your little star shine? Register today and let the fun begin! ✨
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Prizes Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-background to-muted">
+      <section className="py-16 px-4 bg-muted">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">Win Amazing Prizes</h2>
@@ -148,60 +250,51 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* 1st Place - Hero Card */}
+            {/* 1st Place */}
             <div className="md:col-span-1 md:order-2">
-              <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 rounded-2xl p-6 text-center shadow-2xl transform md:-translate-y-4">
+              <div className="relative bg-card border-2 border-primary rounded-2xl p-6 text-center shadow-lg transform md:-translate-y-4">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="bg-yellow-300 rounded-full p-3 shadow-lg">
-                    <Trophy className="w-8 h-8 text-yellow-700" />
+                  <div className="bg-primary rounded-full p-3 shadow-md">
+                    <Trophy className="w-8 h-8 text-primary-foreground" />
                   </div>
                 </div>
                 <div className="mt-6">
-                  <span className="text-yellow-100 font-medium text-sm uppercase tracking-wide">1st Place</span>
-                  <div className="text-4xl md:text-5xl font-bold text-white mt-2 mb-1">₦4M</div>
-                  <span className="text-yellow-100 text-sm">Four Million Naira</span>
-                </div>
-                <div className="mt-4 flex justify-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-200 text-yellow-200" />
-                  ))}
+                  <span className="text-muted-foreground font-medium text-sm uppercase tracking-wide">1st Place</span>
+                  <div className="text-4xl md:text-5xl font-bold text-foreground mt-2 mb-1">₦4M</div>
+                  <span className="text-muted-foreground text-sm">Four Million Naira</span>
                 </div>
               </div>
             </div>
             
             {/* 2nd Place */}
             <div className="md:order-1">
-              <div className="bg-gradient-to-br from-slate-300 via-slate-400 to-slate-500 rounded-2xl p-6 text-center shadow-xl h-full flex flex-col justify-center">
-                <div className="bg-slate-200 rounded-full p-3 w-fit mx-auto mb-4 shadow-md">
-                  <Medal className="w-6 h-6 text-slate-600" />
+              <div className="bg-card border border-border rounded-2xl p-6 text-center shadow-md h-full flex flex-col justify-center">
+                <div className="bg-secondary rounded-full p-3 w-fit mx-auto mb-4">
+                  <Medal className="w-6 h-6 text-muted-foreground" />
                 </div>
-                <span className="text-slate-100 font-medium text-sm uppercase tracking-wide">2nd Place</span>
-                <div className="text-3xl md:text-4xl font-bold text-white mt-2 mb-1">₦2M</div>
-                <span className="text-slate-200 text-sm">Two Million Naira</span>
+                <span className="text-muted-foreground font-medium text-sm uppercase tracking-wide">2nd Place</span>
+                <div className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-1">₦2M</div>
+                <span className="text-muted-foreground text-sm">Two Million Naira</span>
               </div>
             </div>
             
             {/* 3rd Place */}
             <div className="md:order-3">
-              <div className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-700 rounded-2xl p-6 text-center shadow-xl h-full flex flex-col justify-center">
-                <div className="bg-orange-200 rounded-full p-3 w-fit mx-auto mb-4 shadow-md">
-                  <Award className="w-6 h-6 text-orange-700" />
+              <div className="bg-card border border-border rounded-2xl p-6 text-center shadow-md h-full flex flex-col justify-center">
+                <div className="bg-secondary rounded-full p-3 w-fit mx-auto mb-4">
+                  <Award className="w-6 h-6 text-muted-foreground" />
                 </div>
-                <span className="text-orange-100 font-medium text-sm uppercase tracking-wide">3rd Place</span>
-                <div className="text-3xl md:text-4xl font-bold text-white mt-2 mb-1">₦1M</div>
-                <span className="text-orange-200 text-sm">One Million Naira</span>
+                <span className="text-muted-foreground font-medium text-sm uppercase tracking-wide">3rd Place</span>
+                <div className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-1">₦1M</div>
+                <span className="text-muted-foreground text-sm">One Million Naira</span>
               </div>
             </div>
           </div>
           
           {/* 4th & 5th Place */}
-          <div className="bg-muted border border-border rounded-xl p-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-lg">4th & 5th Place</span>
-              <Star className="w-5 h-5 text-primary" />
-            </div>
-            <p className="text-muted-foreground">Special compensation packages for our runners-up</p>
+          <div className="bg-card border border-border rounded-xl p-6 text-center">
+            <span className="font-semibold text-lg">4th & 5th Place</span>
+            <p className="text-muted-foreground mt-1">Special compensation packages for our runners-up</p>
           </div>
         </div>
       </section>
