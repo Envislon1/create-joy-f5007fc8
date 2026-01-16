@@ -108,10 +108,10 @@ export function Leaderboard() {
       <div className="overflow-x-auto">
         <table className="w-full table-fixed">
           <thead>
-            <tr>
-              <th className="text-left p-2 sm:p-3 text-sm sm:text-base w-[15%]">Pos</th>
-              <th className="text-left p-2 sm:p-3 text-sm sm:text-base w-[55%]">Name</th>
-              <th className="text-right p-2 sm:p-3 text-sm sm:text-base w-[30%]">Votes</th>
+            <tr className="border-b-2 border-foreground">
+              <th className="text-left p-2 sm:p-3 text-sm sm:text-base w-[15%] font-semibold">Pos</th>
+              <th className="text-left p-2 sm:p-3 text-sm sm:text-base w-[55%] font-semibold">Name</th>
+              <th className="text-right p-2 sm:p-3 text-sm sm:text-base w-[30%] font-semibold">Votes</th>
             </tr>
           </thead>
           <tbody>
