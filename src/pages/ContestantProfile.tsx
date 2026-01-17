@@ -91,6 +91,8 @@ export default function ContestantProfile() {
             src={contestant.photo_url}
             alt={contestant.full_name}
             className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />
         ) : (
           <div className="w-32 h-32 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center text-4xl">
