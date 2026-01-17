@@ -84,6 +84,8 @@ const OptimizedImage = ({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
+        onContextMenu={(e) => e.preventDefault()}
+        draggable={false}
         className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
       />
     </div>
@@ -149,6 +151,8 @@ const Home = () => {
           alt="Happy family - Little Stars Contest"
           onLoad={handleHeroLoad}
           onError={handleHeroError}
+          onContextMenu={(e) => e.preventDefault()}
+          draggable={false}
           className={`w-full h-full object-cover object-center ${heroLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
