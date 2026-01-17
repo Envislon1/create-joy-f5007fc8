@@ -299,8 +299,25 @@ const Home = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-12 px-4 bg-muted">
+      {/* Steps to Win Section - Blue */}
+      <section className="py-16 px-4 bg-section-blue text-section-blue-foreground">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8">Steps to Win</h2>
+          <div className="space-y-4 text-lg leading-relaxed">
+            <p>
+              Gather support from your loved ones—friends, family, and well-wishers—and encourage them to vote for your child. 
+              Each vote costs just ₦50, and there's no limit to how many votes you can collect!
+            </p>
+            <p>
+              The child who receives the most votes at the end of the contest will be crowned the ultimate winner. 
+              So spread the word, share your child's profile, and let the votes roll in!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - White */}
+      <section className="py-12 px-4 bg-background">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8">How It Works</h2>
           <div className="space-y-4">
@@ -332,17 +349,54 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Terms and Conditions Link */}
-      <section className="py-8 px-4 bg-background border-t border-border">
-        <div className="max-w-2xl mx-auto text-center">
+      {/* Register and Join Section - Blue */}
+      <section className="py-16 px-4 bg-section-blue text-section-blue-foreground">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Register and Join the Stars</h2>
+          <div className="space-y-4 text-lg leading-relaxed mb-8">
+            <p>
+              Getting started is easy! Simply click the "Register Now" button below to sign up your child for the Little Stars Contest.
+              You can also reach out to us via WhatsApp for assistance with registration.
+            </p>
+            <p>
+              Once your registration is complete, remember that voting opens on <span className="font-bold">January 8th, 2026 [GMT+1]</span>.
+              Start rallying your supporters early and get ready for an exciting journey!
+            </p>
+          </div>
           <Link
-            to="/terms"
-            className="text-primary hover:underline font-medium"
+            to="/register"
+            className="inline-block bg-white text-section-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg"
           >
-            Terms and Conditions
+            Register Now
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-4 bg-section-blue text-section-blue-foreground border-t border-white/20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h3 className="text-lg font-semibold mb-4 uppercase tracking-wide">Contact</h3>
+            <div className="flex justify-center gap-6 mb-6">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.017 0C8.396 0 8.032.014 6.852.072 5.675.13 4.868.284 4.169.498c-.72.224-1.33.525-1.938 1.133-.608.608-.909 1.218-1.133 1.938-.214.699-.368 1.506-.426 2.683C.614 7.432.6 7.796.6 11.417v1.166c0 3.621.014 3.985.072 5.165.058 1.177.212 1.984.426 2.683.224.72.525 1.33 1.133 1.938.608.608 1.218.909 1.938 1.133.699.214 1.506.368 2.683.426 1.18.058 1.544.072 5.165.072h1.166c3.621 0 3.985-.014 5.165-.072 1.177-.058 1.984-.212 2.683-.426.72-.224 1.33-.525 1.938-1.133.608-.608.909-1.218 1.133-1.938.214-.699.368-1.506.426-2.683.058-1.18.072-1.544.072-5.165v-1.166c0-3.621-.014-3.985-.072-5.165-.058-1.177-.212-1.984-.426-2.683-.224-.72-.525-1.33-1.133-1.938-.608-.608-1.218-.909-1.938-1.133-.699-.214-1.506-.368-2.683-.426C16.568.614 16.204.6 12.583.6h-.566zm-.283 2.164c3.556 0 3.977.014 5.38.078 1.297.059 2.002.276 2.471.458.621.241 1.064.53 1.529.995.465.465.754.908.995 1.529.182.469.399 1.174.458 2.471.064 1.403.078 1.824.078 5.38s-.014 3.977-.078 5.38c-.059 1.297-.276 2.002-.458 2.471-.241.621-.53 1.064-.995 1.529-.465.465-.908.754-1.529.995-.469.182-1.174.399-2.471.458-1.403.064-1.824.078-5.38.078s-3.977-.014-5.38-.078c-1.297-.059-2.002-.276-2.471-.458-.621-.241-1.064-.53-1.529-.995-.465-.465-.754-.908-.995-1.529-.182-.469-.399-1.174-.458-2.471-.064-1.403-.078-1.824-.078-5.38s.014-3.977.078-5.38c.059-1.297.276-2.002.458-2.471.241-.621.53-1.064.995-1.529.465-.465.908-.754 1.529-.995.469-.182 1.174-.399 2.471-.458 1.403-.064 1.824-.078 5.38-.078zm0 3.684a5.586 5.586 0 100 11.172 5.586 5.586 0 000-11.172zm0 9.213a3.627 3.627 0 110-7.254 3.627 3.627 0 010 7.254zm7.119-9.428a1.306 1.306 0 11-2.612 0 1.306 1.306 0 012.612 0z"/></svg>
+              </a>
+            </div>
+            <nav className="flex flex-wrap justify-center gap-4 text-sm">
+              <Link to="/register" className="hover:text-primary transition">Register</Link>
+              <Link to="/leaderboard" className="hover:text-primary transition">Vote</Link>
+              <Link to="/terms" className="hover:text-primary transition">Terms & Conditions</Link>
+            </nav>
+          </div>
+          <div className="text-center text-sm opacity-80 border-t border-white/20 pt-6">
+            <p className="uppercase tracking-wide mb-1">Copyright</p>
+            <p>Little Stars Contest 2026</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

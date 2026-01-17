@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 90%;
+    --background: 0 0% 100%;
     --foreground: 220 20% 15%;
 
     --card: 0 0% 100%;
@@ -23,7 +23,7 @@ All colors MUST be HSL.
     --secondary: 45 25% 92%;
     --secondary-foreground: 220 20% 15%;
 
-    --muted: 45 20% 94%;
+    --muted: 200 50% 97%;
     --muted-foreground: 220 10% 45%;
 
     --accent: 25 80% 60%;
@@ -37,6 +37,10 @@ All colors MUST be HSL.
     --ring: 25 95% 55%;
 
     --radius: 0.5rem;
+
+    /* Blue section colors */
+    --section-blue: 201 79% 32%;
+    --section-blue-foreground: 0 0% 100%;
 
     --sidebar-background: 45 25% 95%;
     --sidebar-foreground: 220 10% 30%;
@@ -76,6 +80,10 @@ All colors MUST be HSL.
     --border: 220 15% 20%;
     --input: 220 15% 20%;
     --ring: 25 95% 55%;
+
+    /* Blue section colors */
+    --section-blue: 201 79% 32%;
+    --section-blue-foreground: 0 0% 100%;
 
     --sidebar-background: 220 20% 8%;
     --sidebar-foreground: 45 15% 90%;
