@@ -60,33 +60,37 @@ export function VoteSection({ contestantId, contestantName, onVoteSuccess }: Vot
           contestant_id: contestantId,
           vote_count: voteCount,
         },
-        callback: async (response: { reference: string }) => {
-          try {
-            const { data, error } = await supabase.functions.invoke("verify-payment", {
-              body: {
-                reference: response.reference,
-                contestant_id: contestantId,
-                vote_count: voteCount,
-                voter_email: email,
-              },
-            });
+        callback: function(response: { reference: string }) {
+          // Paystack requires a synchronous callback, so we handle async inside
+          const verifyPayment = async () => {
+            try {
+              const { data, error } = await supabase.functions.invoke("verify-payment", {
+                body: {
+                  reference: response.reference,
+                  contestant_id: contestantId,
+                  vote_count: voteCount,
+                  voter_email: email,
+                },
+              });
 
-            if (error) throw error;
+              if (error) throw error;
 
-            if (data.success) {
-              toast({ title: `Successfully added ${voteCount} vote(s) for ${contestantName}!` });
-              onVoteSuccess();
-              setRawAmount("");
-              setEmail("");
-            } else {
-              toast({ title: data.message || "Vote failed", variant: "destructive" });
+              if (data.success) {
+                toast({ title: `Successfully added ${voteCount} vote(s) for ${contestantName}!` });
+                onVoteSuccess();
+                setRawAmount("");
+                setEmail("");
+              } else {
+                toast({ title: data.message || "Vote failed", variant: "destructive" });
+              }
+            } catch (error: any) {
+              console.error("Verification error:", error);
+              toast({ title: "Payment verification failed", variant: "destructive" });
+            } finally {
+              setLoading(false);
             }
-          } catch (error: any) {
-            console.error("Verification error:", error);
-            toast({ title: "Payment verification failed", variant: "destructive" });
-          } finally {
-            setLoading(false);
-          }
+          };
+          verifyPayment();
         },
         onClose: () => {
           setLoading(false);
