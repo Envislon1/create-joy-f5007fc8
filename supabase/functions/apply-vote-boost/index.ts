@@ -14,6 +14,11 @@ const VOTE_BOOSTS: Record<string, number> = {
   "Michael Olaoluwa": 120,
 };
 
+// Add logging for each contestant lookup
+const logContestantSearch = (name: string, found: boolean) => {
+  console.log(`Searching for contestant "${name}": ${found ? 'FOUND' : 'NOT FOUND'}`);
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -100,6 +105,7 @@ Deno.serve(async (req) => {
       const targetVotes = highestVotes + bonusVotes;
 
       // Find the contestant by name
+      console.log(`Looking for contestant: "${contestantName}"`);
       const { data: contestant, error: findError } = await supabase
         .from("contestants")
         .select("id, full_name, votes")
@@ -107,10 +113,12 @@ Deno.serve(async (req) => {
         .single();
 
       if (findError || !contestant) {
-        console.error(`Contestant not found: ${contestantName}`, findError);
-        results.push({ name: contestantName, success: false, error: "Contestant not found" });
+        console.error(`Contestant not found: "${contestantName}"`, findError);
+        results.push({ name: contestantName, success: false, error: `Contestant not found: ${findError?.message || 'No match'}` });
         continue;
       }
+      
+      console.log(`Found contestant: ${contestant.full_name} with ${contestant.votes} votes`);
 
       // Update the contestant's votes
       const { error: updateError } = await supabase

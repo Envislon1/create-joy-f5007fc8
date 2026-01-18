@@ -11,8 +11,6 @@ import chidiImg from "@/assets/contestants/chidi.webp";
 import nkechiImg from "@/assets/contestants/nkechi.webp";
 import zuriImg from "@/assets/contestants/zuri.webp";
 import tundeImg from "@/assets/contestants/tunde.webp";
-import "@fontsource/great-vibes";
-import "@fontsource/pacifico";
 
 const contestants = [
   { name: "Samuel", image: amaraImg },
@@ -146,16 +144,10 @@ const Home = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <h1 
-            className="text-4xl md:text-6xl text-white drop-shadow-lg mb-4 animate-fade-in"
-            style={{ 
-              fontFamily: "'Pacifico', cursive",
-              animation: "title-reveal 1.5s ease-out forwards"
-            }}
-          >
+          <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg mb-4">
             Little Stars Kiddies
           </h1>
-          <p className="text-lg md:text-xl text-white/90 drop-shadow-md max-w-2xl animate-fade-in" style={{ animationDelay: "0.5s" }}>
+          <p className="text-lg md:text-xl text-white/90 drop-shadow-md max-w-2xl">
             Celebrating the brilliance of children across Nigeria! Register your child and let them shine.
           </p>
         </div>
