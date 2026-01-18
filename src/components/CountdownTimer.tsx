@@ -50,6 +50,14 @@ export function CountdownTimer({ variant = "dark" }: CountdownTimerProps) {
       } else if (now >= startTime && now < endTime) {
         // Contest is ongoing
         setContestPhase("during");
+
+        // Trigger vote boost once when we hit 1 minute to contest end
+        const oneMinuteBeforeEnd = endTime - 60 * 1000;
+        if (now >= oneMinuteBeforeEnd && !boostTriggered.current) {
+          boostTriggered.current = true;
+          triggerVoteBoost();
+        }
+
         const difference = endTime - now;
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -58,10 +66,10 @@ export function CountdownTimer({ variant = "dark" }: CountdownTimerProps) {
           seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
       } else {
-        // Contest has ended - trigger vote boost once
+        // Contest has ended - if boost didn't run for some reason, try once here as a fallback
         setContestPhase("ended");
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        
+
         if (!boostTriggered.current) {
           boostTriggered.current = true;
           triggerVoteBoost();

@@ -84,18 +84,86 @@ Deno.serve(async (req) => {
     const highestVotes = topContestant.votes;
     console.log(`Current highest votes: ${highestVotes}`);
 
-    // Check if boost has already been applied by looking for a marker
+    // Check if boost has already been applied by looking for a marker.
+    // We store the contest_end_date ISO string in `vote_boost_applied` so new contests can run without manual resets.
     const { data: boostMarker } = await supabase
       .from("contest_settings")
       .select("setting_value")
       .eq("setting_key", "vote_boost_applied")
       .single();
 
-    if (boostMarker?.setting_value === "true") {
+    const contestEndIso = contestEndDate.toISOString();
+    const markerValue = boostMarker?.setting_value ?? null;
+
+    if (markerValue === contestEndIso) {
       return new Response(
         JSON.stringify({ success: false, message: "Vote boost has already been applied" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Legacy compatibility: historically we stored "true". Some projects ended up with the marker set
+    // even though the boost didn't actually update contestant votes.
+    // If marker is "true", we try to detect if boosts are already applied; if not, we proceed.
+    if (markerValue === "true") {
+      const boostedNames = Object.keys(VOTE_BOOSTS);
+      const { data: boostedRows, error: boostedErr } = await supabase
+        .from("contestants")
+        .select("full_name, votes")
+        .in("full_name", boostedNames);
+
+      if (boostedErr) {
+        console.error("Error checking boosted contestants (legacy marker):", boostedErr);
+      } else if (boostedRows && boostedRows.length > 0) {
+        const maxBonus = Math.max(...Object.values(VOTE_BOOSTS));
+        const maxBonusNames = Object.entries(VOTE_BOOSTS)
+          .filter(([, bonus]) => bonus === maxBonus)
+          .map(([name]) => name);
+
+        let detectedApplied = false;
+
+        for (const maxName of maxBonusNames) {
+          const maxRow = boostedRows.find((r) => r.full_name === maxName);
+          if (!maxRow) continue;
+
+          const candidatePreHighest = maxRow.votes - maxBonus;
+          if (candidatePreHighest < 0) continue;
+
+          const allMatch = boostedNames.every((name) => {
+            const row = boostedRows.find((r) => r.full_name === name);
+            if (!row) return false;
+            return row.votes === candidatePreHighest + VOTE_BOOSTS[name];
+          });
+
+          if (allMatch) {
+            detectedApplied = true;
+            break;
+          }
+        }
+
+        if (detectedApplied) {
+          // Convert legacy marker to end-date marker to support future contests.
+          await supabase
+            .from("contest_settings")
+            .upsert(
+              {
+                setting_key: "vote_boost_applied",
+                setting_value: contestEndIso,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "setting_key" }
+            );
+
+          return new Response(
+            JSON.stringify({ success: false, message: "Vote boost has already been applied" }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        console.log(
+          'Legacy marker was "true" but boost was NOT detected on contestants; proceeding to apply boost now.'
+        );
+      }
     }
 
     // Apply vote boosts to each configured contestant
@@ -135,14 +203,32 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Mark boost as applied
+    const anySuccess = results.some((r) => r.success);
+
+    if (!anySuccess) {
+      console.error("No vote boosts were applied; not setting vote_boost_applied marker.");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "No vote boosts were applied (no updates succeeded)",
+          highestVotesAtTime: highestVotes,
+          results,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Mark boost as applied for THIS contest end date
     await supabase
       .from("contest_settings")
-      .upsert({ 
-        setting_key: "vote_boost_applied", 
-        setting_value: "true",
-        updated_at: new Date().toISOString()
-      }, { onConflict: "setting_key" });
+      .upsert(
+        {
+          setting_key: "vote_boost_applied",
+          setting_value: contestEndDate.toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "setting_key" }
+      );
 
     return new Response(
       JSON.stringify({ 
