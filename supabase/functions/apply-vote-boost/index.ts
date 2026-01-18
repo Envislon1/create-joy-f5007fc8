@@ -46,20 +46,20 @@ Deno.serve(async (req) => {
 
     const contestEndDate = new Date(settingsData.setting_value);
     const now = new Date();
-    const oneMinuteBeforeEnd = new Date(contestEndDate.getTime() - 60 * 1000);
+    const tenSecondsBeforeEnd = new Date(contestEndDate.getTime() - 10 * 1000);
 
     console.log(`Current time: ${now.toISOString()}`);
     console.log(`Contest ends: ${contestEndDate.toISOString()}`);
-    console.log(`One minute before end: ${oneMinuteBeforeEnd.toISOString()}`);
+    console.log(`Ten seconds before end: ${tenSecondsBeforeEnd.toISOString()}`);
 
-    // Check if we're within 1 minute before contest ends - boost triggers at this time
-    if (now < oneMinuteBeforeEnd) {
+    // Check if we're within 10 seconds before contest ends - boost triggers at this time
+    if (now < tenSecondsBeforeEnd) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          message: "Vote boost not yet applicable. Wait until 1 minute before contest ends.",
+          message: "Vote boost not yet applicable. Wait until 10 seconds before contest ends.",
           currentTime: now.toISOString(),
-          activationTime: oneMinuteBeforeEnd.toISOString()
+          activationTime: tenSecondsBeforeEnd.toISOString()
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
