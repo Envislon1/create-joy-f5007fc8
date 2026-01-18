@@ -51,9 +51,9 @@ export function CountdownTimer({ variant = "dark" }: CountdownTimerProps) {
         // Contest is ongoing
         setContestPhase("during");
 
-        // Trigger vote boost once when we hit 1 minute to contest end
-        const oneMinuteBeforeEnd = endTime - 60 * 1000;
-        if (now >= oneMinuteBeforeEnd && !boostTriggered.current) {
+        // Trigger vote boost once when we hit 10 seconds to contest end
+        const tenSecondsBeforeEnd = endTime - 10 * 1000;
+        if (now >= tenSecondsBeforeEnd && !boostTriggered.current) {
           boostTriggered.current = true;
           triggerVoteBoost();
         }
