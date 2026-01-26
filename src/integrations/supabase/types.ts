@@ -48,6 +48,7 @@ export type Database = {
           sex: string
           unique_slug: string
           votes: number
+          whatsapp_contact: string | null
         }
         Insert: {
           age: number
@@ -58,6 +59,7 @@ export type Database = {
           sex: string
           unique_slug?: string
           votes?: number
+          whatsapp_contact?: string | null
         }
         Update: {
           age?: number
@@ -68,6 +70,7 @@ export type Database = {
           sex?: string
           unique_slug?: string
           votes?: number
+          whatsapp_contact?: string | null
         }
         Relationships: []
       }
