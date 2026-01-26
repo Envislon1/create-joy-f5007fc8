@@ -10,6 +10,7 @@ export function RegistrationForm({ onSuccess }: RegistrationFormProps) {
   const [fullName, setFullName] = useState("");
   const [age, setAge] = useState("");
   const [sex, setSex] = useState("");
+  const [whatsappContact, setWhatsappContact] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -49,6 +50,7 @@ export function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           age: parseInt(age),
           sex: sex,
           photo_url: photoUrl,
+          whatsapp_contact: whatsappContact || null,
         })
         .select("unique_slug")
         .single();
@@ -110,6 +112,17 @@ export function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1">WhatsApp Contact</label>
+        <input
+          type="tel"
+          value={whatsappContact}
+          onChange={(e) => setWhatsappContact(e.target.value)}
+          placeholder="e.g. 08012345678"
+          className="w-full border border-border p-2 rounded"
+        />
       </div>
 
       <div>
