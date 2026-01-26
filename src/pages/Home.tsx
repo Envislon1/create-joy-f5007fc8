@@ -5,20 +5,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
 import { Trophy, Medal, Award } from "lucide-react";
 import heroImage from "@/assets/hero-family.webp";
-import amaraImg from "@/assets/contestants/amara.webp";
-import adaezeImg from "@/assets/contestants/adaeze.webp";
-import chidiImg from "@/assets/contestants/chidi.webp";
-import nkechiImg from "@/assets/contestants/nkechi.webp";
-import zuriImg from "@/assets/contestants/zuri.webp";
-import tundeImg from "@/assets/contestants/tunde.webp";
+
+// Gallery images for carousel
+import girlAfricanDress from "@/assets/gallery/girl-african-dress.jpeg";
+import boyTraditional from "@/assets/gallery/boy-traditional.jpeg";
+import boyWhiteOutfit from "@/assets/gallery/boy-white-outfit.jpeg";
+import babyBlueBalloons from "@/assets/gallery/baby-blue-balloons.jpeg";
+import boyBlackAgbada from "@/assets/gallery/boy-black-agbada.jpeg";
+import boyWhiteGoldAgbada from "@/assets/gallery/boy-white-gold-agbada.jpeg";
+import boyHeadwrap from "@/assets/gallery/boy-headwrap.jpeg";
+import boyWhiteCap from "@/assets/gallery/boy-white-cap.jpeg";
+import boyBlueCap from "@/assets/gallery/boy-blue-cap.jpeg";
+import girlBlueAnkara from "@/assets/gallery/girl-blue-ankara.jpeg";
 
 const contestants = [
-  { name: "Samuel", image: amaraImg },
-  { name: "Adaeze", image: adaezeImg },
-  { name: "Chidi", image: chidiImg },
-  { name: "Adebisi", image: nkechiImg },
-  { name: "Jedidiah", image: zuriImg },
-  { name: "Tunde", image: tundeImg },
+  { name: "Adaeze", image: girlAfricanDress },
+  { name: "Chukwuemeka", image: boyTraditional },
+  { name: "Tunde", image: boyWhiteOutfit },
+  { name: "Emmanuel", image: babyBlueBalloons },
+  { name: "Oluwaseun", image: boyBlackAgbada },
+  { name: "Chisom", image: boyWhiteGoldAgbada },
+  { name: "Ibrahim", image: boyHeadwrap },
+  { name: "Kelechi", image: boyWhiteCap },
+  { name: "Adebayo", image: boyBlueCap },
+  { name: "Chiamaka", image: girlBlueAnkara },
 ];
 
 // Preload all images on mount
