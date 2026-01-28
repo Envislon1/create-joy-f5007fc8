@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Heart, Trophy, Users } from "lucide-react";
+import { Star, Heart, Trophy, Users, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 // Gallery images
 import girlAfricanDress from "@/assets/gallery/girl-african-dress.jpeg";
 import boyTraditional from "@/assets/gallery/boy-traditional.jpeg";
-import kidsPlayingBlocks from "@/assets/gallery/kids-playing-blocks.webp";
+import heroFamily from "@/assets/hero-family.webp";
 import boyReading from "@/assets/gallery/boy-reading.jpeg";
 import siblingsPlaying from "@/assets/gallery/siblings-playing.jpeg";
 import happyBoyBooks from "@/assets/gallery/happy-boy-books.jpeg";
@@ -12,22 +14,66 @@ import babyBlueBalloons from "@/assets/gallery/baby-blue-balloons.jpeg";
 import kidsPuzzle from "@/assets/gallery/kids-puzzle.jpeg";
 import boyWhiteOutfit from "@/assets/gallery/boy-white-outfit.jpeg";
 import smilingToddler from "@/assets/gallery/smiling-toddler.jpeg";
+import boyArabOutfit from "@/assets/gallery/boy-arab-outfit.jpeg";
+import babyGreyHoodieNew from "@/assets/gallery/baby-grey-hoodie-new.jpeg";
+import boyWhiteAgbadaSmiling from "@/assets/gallery/boy-white-agbada-smiling.jpeg";
+import boyBlueCapLadder from "@/assets/gallery/boy-blue-cap-ladder.jpeg";
 
 const galleryImages = [
   { src: girlAfricanDress, alt: "Beautiful girl in African print dress" },
   { src: boyTraditional, alt: "Boy in traditional African outfit" },
-  { src: babyBlueBalloons, alt: "Adorable baby with balloons" },
   { src: boyWhiteOutfit, alt: "Stylish boy in white outfit" },
   { src: smilingToddler, alt: "Happy smiling toddler" },
   { src: happyBoyBooks, alt: "Excited boy with books" },
+  { src: boyArabOutfit, alt: "Cute boy in traditional Arab outfit" },
+  { src: babyGreyHoodieNew, alt: "Adorable baby in grey hoodie" },
+  { src: boyWhiteAgbadaSmiling, alt: "Smiling boy in white agbada" },
+  { src: boyBlueCapLadder, alt: "Boy with blue cap by ladder" },
 ];
 
 const activityImages = [
-  { src: kidsPlayingBlocks, alt: "Kids playing with building blocks" },
+  { src: heroFamily, alt: "Happy family together" },
   { src: siblingsPlaying, alt: "Siblings playing together" },
   { src: kidsPuzzle, alt: "Children solving puzzles" },
   { src: boyReading, alt: "Boy enjoying story time" },
 ];
+
+const GalleryCollapsible = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className="w-full group">
+        <div className="flex items-center justify-center gap-3 cursor-pointer py-4 px-6 bg-white/10 backdrop-blur rounded-xl border border-white/20 hover:bg-white/20 transition-colors">
+          <h2 className="text-2xl md:text-3xl font-bold text-white">
+            Our Little Stars Gallery
+          </h2>
+          <ChevronDown 
+            className={`w-6 h-6 text-white transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          />
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {galleryImages.map((image, index) => (
+            <div
+              key={index}
+              className="aspect-square overflow-hidden rounded-xl shadow-lg group bg-white/10"
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 const About = () => {
   return (
@@ -65,27 +111,9 @@ const About = () => {
       </section>
 
       {/* Star Gallery Section */}
-      <section className="py-12 px-4 bg-background">
+      <section className="py-12 px-4 bg-section-blue">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-            Our Little Stars Gallery
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryImages.map((image, index) => (
-              <div
-                key={index}
-                className="aspect-square overflow-hidden rounded-xl shadow-lg group"
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onContextMenu={(e) => e.preventDefault()}
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </div>
+          <GalleryCollapsible />
         </div>
       </section>
 
@@ -124,24 +152,24 @@ const About = () => {
       </section>
 
       {/* Our Mission Section */}
-      <section className="py-16 px-4 bg-background">
+      <section className="py-16 px-4 bg-section-blue">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
             Showcasing the Adorable
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-card rounded-xl p-6 shadow-md border border-border">
-              <Star className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-xl font-bold mb-3">Our Purpose</h3>
-              <p className="text-muted-foreground">
+            <div className="bg-white/10 backdrop-blur rounded-xl p-6 shadow-md border border-white/20">
+              <Star className="w-10 h-10 text-white mb-4" />
+              <h3 className="text-xl font-bold mb-3 text-white">Our Purpose</h3>
+              <p className="text-white/85">
                 Little Stars Kiddies exists to showcase your adorable little one on the grandest stage of them all. 
                 We celebrate the beauty, innocence, and charm that every child naturally possesses.
               </p>
             </div>
-            <div className="bg-card rounded-xl p-6 shadow-md border border-border">
-              <Heart className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-xl font-bold mb-3">What We Believe</h3>
-              <p className="text-muted-foreground">
+            <div className="bg-white/10 backdrop-blur rounded-xl p-6 shadow-md border border-white/20">
+              <Heart className="w-10 h-10 text-white mb-4" />
+              <h3 className="text-xl font-bold mb-3 text-white">What We Believe</h3>
+              <p className="text-white/85">
                 At Little Stars, we believe children are the rarest of treasures and deserve to be treated as such. 
                 Your child is too precious to remain hidden—our goal is to display their cuteness to the world.
               </p>
@@ -151,16 +179,16 @@ const About = () => {
       </section>
 
       {/* Activity Gallery Section */}
-      <section className="py-12 px-4 bg-muted/30">
+      <section className="py-12 px-4 bg-section-blue">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-white">
             Every Moment is Precious
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {activityImages.map((image, index) => (
               <div
                 key={index}
-                className="aspect-[4/3] overflow-hidden rounded-xl shadow-lg group"
+                className="aspect-[4/3] overflow-hidden rounded-xl shadow-lg group bg-white/10"
               >
                 <img
                   src={image.src}
@@ -203,13 +231,13 @@ const About = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16 px-4 bg-background">
+      <section className="py-16 px-4 bg-section-blue">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
             What's In It For You?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-section-blue text-white rounded-xl p-6 text-center">
+            <div className="bg-white/10 backdrop-blur text-white rounded-xl p-6 text-center border border-white/20">
               <Trophy className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Become the Face of Little Stars</h3>
               <p className="text-white/85">
@@ -217,7 +245,7 @@ const About = () => {
                 amazing endorsement opportunities and exclusive deals.
               </p>
             </div>
-            <div className="bg-section-blue text-white rounded-xl p-6 text-center">
+            <div className="bg-white/10 backdrop-blur text-white rounded-xl p-6 text-center border border-white/20">
               <Star className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Win Exciting Cash Prizes</h3>
               <p className="text-white/85">
@@ -225,7 +253,7 @@ const About = () => {
                 with generous rewards for runners-up too!
               </p>
             </div>
-            <div className="bg-section-blue text-white rounded-xl p-6 text-center">
+            <div className="bg-white/10 backdrop-blur text-white rounded-xl p-6 text-center border border-white/20">
               <Users className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Build Your Child's Portfolio</h3>
               <p className="text-white/85">
@@ -233,7 +261,7 @@ const About = () => {
                 professional team. Your child's star journey begins here!
               </p>
             </div>
-            <div className="bg-section-blue text-white rounded-xl p-6 text-center">
+            <div className="bg-white/10 backdrop-blur text-white rounded-xl p-6 text-center border border-white/20">
               <Heart className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-3">Create Lasting Memories</h3>
               <p className="text-white/85">
